@@ -1,0 +1,13 @@
+- stat: {path: "{{item.value.src|default('{0}/{1}'.format(cops_mltrainer_code_dir, item.key))}}"}
+  register: testsynccontent
+  delegate_to: "{{item.value.delegate|default('localhost')}}"
+- name: "Synchronise theme {{item.key}} inside the environment (deleguation)"
+  delegate_to: "{{item.value.delegate|default('localhost')}}"
+  synchronize:
+    compress: false
+    ssh_args: "{{item.value.sshargs|default(cops_mltrainer_sshargs)}}"
+    src: "{{item.value.src|default('{0}/{1}'.format(cops_mltrainer_code_dir, item.key))}}"
+    dest: "{{item.value.dest|default('{0}/{1}'.format(cops_mltrainer_dir, item.key))}}"
+    rsync_opts: "{{item.value.rsync_opts|default(cops_mltrainer_theme_rsync_opts)}}"
+    set_remote_user: "no"
+  when: "testsynccontent.stat.exists"

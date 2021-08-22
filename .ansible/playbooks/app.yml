@@ -1,0 +1,10 @@
+---
+# APP
+- hosts: "{{mltrainer_servers|default('all')}}"
+  roles: [corpusops.roles/ansible_plugins]
+  tasks:
+  - when: ["cops_mltrainer_lifecycle_app|default(true)"]
+    tags: ["cops_mltrainer_lifecycle_app"]
+    block:
+    - include_role: {name: mltrainer_vars, allow_duplicates: false}
+    - include_role: {name: mltrainer,      allow_duplicates: false}
