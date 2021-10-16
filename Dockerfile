@@ -101,7 +101,6 @@ RUN gosu mltrainer:mltrainer bash -exc ': \
     && cd src \
     && cd - \
     '
-ADD --chown=mltrainer:mltrainer tests                        /code/tests
 
 # Final cleanup, only work if using the docker build --squash option
 ARG DEV_DEPENDENCIES_PATTERN='^#\s*dev dependencies'
@@ -137,5 +136,15 @@ RUN bash -exc ': \
 
 WORKDIR /code/src
 ADD --chown=mltrainer:mltrainer .git                         /code/.git
+ADD --chown=mltrainer:mltrainer models                       /code/models
+ADD --chown=mltrainer:mltrainer notebooks                    /code/notebooks
+ADD --chown=mltrainer:mltrainer tests                        /code/tests
+
 # image will drop privileges itself using gosu at the end of the entrypoint
-CMD "/init.sh"
+#
+RUN set -e \
+  && ln -vfs /usr/local/cuda-11.0/targets/x86_64-linux/lib/libcublas.so   /usr/lib/libcublas.so.10 \
+  && ln -vfs /usr/local/cuda-11.0/targets/x86_64-linux/lib/libcudart.so   /usr/lib/libcudart.so.10.1 \
+  && ln -vfs /usr/local/cuda-11.0/targets/x86_64-linux/lib/libcusparse.so /usr/lib/libcusparse.so.10
+ENTRYPOINT ["/bin/bash"]
+CMD ["/init.sh"]
