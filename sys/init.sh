@@ -184,6 +184,7 @@ services_setup() {
 
 fixperms() {
     if [[ -n $NO_FIXPERMS ]];then return 0;fi
+    if [ "x$(id -u $APP_USER)" = "x0" ];then return 0;fi
     for i in $USER_DIRS;do
         if [ -e "$i" ];then
             chown $APP_USER:$APP_GROUP "$i"
